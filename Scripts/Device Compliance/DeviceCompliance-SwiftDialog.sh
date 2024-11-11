@@ -9,6 +9,16 @@
 # Jamf API calls use encrypted username and password for security. To setup username and password encryption use https://github.com/brysontyrrell/EncryptedStrings
 # Script must be run as root
 #
+# Jamf parameters
+# Parameter 4 - Encrypted username string
+# Parameter 5 - Encrypted username salt and passphrase as salt;passphrase
+# Parameter 6 - Encrypted password string
+# Parameter 7 - Encrypted password salt and passphrase as salt;passphrase
+# Parameter 8 - SwiftDialog custom trigger name (ex: JCDialog)
+# Parameter 9 - Device Compliance Registration custom trigger name (ex: dc-sd-reg)
+# Parameter 10 - SwiftDialog icon custom image URL
+# Parameter 11 - Help URL for the info button
+#
 # Created by: Logan Holliday
 # 
 # 
@@ -33,17 +43,19 @@ userHome=$(dscl . read "/Users/$loggedInUser" NFSHomeDirectory | awk -F ' ' '{pr
 # Get computer ID using SERIALFULL
 machineUUID=$(/usr/sbin/ioreg -rd1 -c IOPlatformExpertDevice | /usr/bin/awk '/IOPlatformUUID/ { gsub(/"/,"",$3); print $3; }')
 JAMF_URL="$(defaults read /Library/Preferences/com.jamfsoftware.jamf.plist jss_url | sed 's|/$||')"
-# Script parameter input of encrypted username and password as encryptedUSERNAME;encryptedPASSWORD
-jssUserInformationInput="$4"
-IFS=';' read -ra jssUserInfoBits <<< "$jssUserInformationInput"
-jssAPIUsernameEncrypted=${jssUserInfoBits[0]}
-jssAPIPasswordEncrypted=${jssUserInfoBits[1]}
+# Script parameter input of encrypted username and password
+jssAPIUsernameEncrypted="$4"
+jssAPIPasswordEncrypted="$6"
 # Encrypted API account username salt and passphrase
-jssAPIUsernameSalt="UPDATEsaltWHENENCRYPTINGUSERINFORMATION"
-jssAPIUsernamePassphrase="UPDATEpassphraseWHENENCRYPTINGUSERINFORMATION"
+jssUserInformationInput="$5"
+IFS=';' read -ra jssUserInfoBits <<< "$jssUserInformationInput"
+jssAPIUsernameSalt=${jssUserInfoBits[0]}
+jssAPIUsernamePassphrase=${jssUserInfoBits[1]}
 # Encrypted API account password salt and passphrase
-jssAPIPasswordSalt="UPDATEsaltWHENENCRYPTINGUSERINFORMATION"
-jssAPIPasswordPassphrase="UPDATEpassphraseWHENENCRYPTINGUSERINFORMATION"
+jssPassInformationInput="$7"
+IFS=';' read -ra jssPassInfoBits <<< "$jssPassInformationInput"
+jssAPIPasswordSalt=${jssPassInfoBits[0]}
+jssAPIPasswordPassphrase=${jssPassInfoBits[1]}
 # Jamf API bearer token stuff
 bearerToken=""
 tokenExpirationEpoch="0" 
@@ -54,10 +66,12 @@ scriptLog="/var/tmp/Registration.DC.log"
 DialogCommandFile="/var/tmp/Dialog_progress.log"
 # SwiftDialog Settings
 title="Device Compliance Registration"
-icon="https://cdn-icons-png.flaticon.com/128/732/732221.png"
 infobuttonaction="https://learn.jamf.com/en-US/bundle/technical-paper-microsoft-intune-current/page/Computer_Regisration_for_End_Users.html"
 infobuttontext="Registration Guide"
-helpURL="https://www.example.com"
+helpURL="${11}" # URL for help button
+icon="${10}" # Custom icon for SwiftDialog
+swiftInstaller="$8" # Jamf custom trigger for installing SwiftDialog
+dcRegistration="$9" # Jamf custom trigger for Device Compliance Registration policy
 
 #############
 # Functions #
@@ -78,7 +92,7 @@ checkDialogApp() {
   if [[ ! -f "$dialogBinary" ]]; then
     updateScriptLog "PRE-FLIGHT CHECK: Dialog not found. Installing..."
     echo "Swift Dialog not found. Running Jamf policy to install Swift Dialog."
-    jamf policy -event JCSwift
+    jamf policy -event "$swiftInstaller"
   else
     updateScriptLog "PRE-FLIGHT CHECK: Dialog found."
     echo "Swift Dialog is installed."
@@ -177,7 +191,7 @@ InventoryUpdate() {
 # Compliance Registration policy trigger
 ComplianceRegistration() {
   echo "Starting the device compliance registration process..."
-  jamf policy -event dc-sd-reg
+  jamf policy -event "$dcRegistration"
 }
 
 # Decrypt String
@@ -215,11 +229,9 @@ getComputerDetails() {
   COMPUTER_ID=$(/usr/bin/curl -sf --header "Authorization: Bearer ${bearerToken}" "${JAMF_URL}/JSSResource/computers/udid/${machineUUID}" -X GET -H "accept: application/xml" | /usr/bin/xmllint --xpath "/computer/general/id/text()" - 2>/dev/null)
   # Get computer details
   response=$(curl -s -H "Authorization: Bearer $bearerToken" "$JAMF_URL/JSSResource/computers/id/$COMPUTER_ID")
-  # Extract site and username
-  site=$(echo $response | xmllint --xpath "string(/computer/general/site/name)" -)
+  # Extract username
   username=$(echo $response | xmllint --xpath "string(/computer/location/username)" -)
   
-  echo "Site: $site"
   echo "Username: $username"
 }
 
