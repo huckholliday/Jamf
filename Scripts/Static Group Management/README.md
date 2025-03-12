@@ -1,0 +1,1 @@
+Managing a system in a static computer group with Jamf API calls.

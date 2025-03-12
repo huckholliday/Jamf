@@ -1,17 +1,24 @@
-#!/bin/bash
+#!/bin/sh
 
-# # # # # # # # # # # # # # # # # # # 
-# This script template would be uploaded to Jamf Pro server and run in a policy when API is needed for gathering information, putting information, updating information, or deleting information in the Jamf Pro site.
-# You must have a local account made in Jamf first with correct permissions needed for API calls and the username/password must be encrypted with the Salt/Pass Phrase saved to use in this script and encrypted data added to Policy.
-# Encrypting Jamf API username and password can use https://github.com/brysontyrrell/EncryptedStrings
+# Script for adding computer to a static group in JSS.
 
 # Parameter 4 - Script parameter input of encrypted username and password as encryptedUSERNAME;encryptedPASSWORD
 # Parameter 5 - Script parameter input of encrypted username salt and passphrase as encryptedSALT;encryptedPASSPHRASE
 # Parameter 6 - Script parameter input of encrypted password salt and passphrase as encryptedSALT;encryptedPASSPHRASE
+# Parameter 7 - ID of Static Computer Group
+# Parameter 8 - Full name of Static Computer Group
 
-# # # # # # # # # # # # # # # # # # # 
+# Verify we are running as root
+if [[ $(id -u) -ne 0 ]]; then
+  echo "ERROR: This script must be run as root **EXITING**"
+  exit 1
+fi
 
-### Set variables ###
+### Variables ###
+
+# URL for Jamf
+jssAddress=$(/usr/bin/defaults read /Library/Preferences/com.jamfsoftware.jamf jss_url)
+jssAddressCleaned=$(echo ${jssAddress%/}) # Removes trailing slash, if exists
 JAMF_URL="$(defaults read /Library/Preferences/com.jamfsoftware.jamf.plist jss_url | sed 's|/$||')"
 
 # Script parameter input of encrypted username and password as encryptedUSERNAME;encryptedPASSWORD
@@ -32,12 +39,17 @@ IFS=';' read -ra jssPasswordSaltPassInfoBits <<< "$jssPasswordSaltPassInformatio
 jssAPIPasswordSalt=${jssPasswordSaltPassInfoBits[0]}
 jssAPIPasswordPassphrase=${jssPasswordSaltPassInfoBits[1]}
 
+# TargetGroupID name should be $7 in JSS - replacing for testing
+TargetGroupID="$7"
+TargetGroupName="$8"
+
 # Jamf API bearer token stuff
 bearerToken=""
 tokenExpirationEpoch="0" 
 
 # XML header stuff
-xmlHeader="<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
+xmlHeader="<?xml version=\"1.0\" encoding=\"UTF-8\"?>" # XML header stuff
+jamfAPI="${jssAddressCleaned}/JSSResource/computergroups/id/" # Jamf API URL
 
 # API Process
 function DecryptString() {
@@ -68,7 +80,6 @@ invalidateToken() {
 	fi
 }
 
-
 # Decrypt the username and password for Jamf API bearer token
 echo "Decrypting"
 jssAPIUsername=$(DecryptString $jssAPIUsernameEncrypted $jssAPIUsernameSalt $jssAPIUsernamePassphrase)
@@ -76,14 +87,24 @@ jssAPIPassword=$(DecryptString $jssAPIPasswordEncrypted $jssAPIPasswordSalt $jss
 
 getBearerToken
 
+ComputerName=$(/usr/sbin/scutil --get ComputerName)
+machineSerial=$(ioreg -c IOPlatformExpertDevice -d 2 | awk -F\" '/IOPlatformSerialNumber/{print $(NF-1)}')
+apiURL="JSSResource/computergroups/id/"
 
-# # # # # # # # # # # # # # # # # # # 
-# SCRIPT AND API CALLS WILL GO HERE #
-# # # # # # # # # # # # # # # # # # # 
-# EXAMPLE: COMPUTER_ID=$(curl -s -X GET -H "Authorization: Bearer ${bearerToken}" "$JAMF_URL/JSSResource/computers/serialnumber/$SERIAL" | xpath -q -e '/computer/general/id/text()')
+# Add computer to a group
+echo "Adding ${ComputerName} to static group, ID: ${TargetGroupID} NAME: ${TargetGroupName}"
 
+apiData="<computer_group><id>${TargetGroupID}</id><name>${TargetGroupName}</name><computer_additions><computer><serial_number>${machineSerial}</serial_number></computer></computer_additions></computer_group>"
 
-# Clear bearer token
+# Flags: -s Silent -S Show error -k insecure -i include header -u User password
+curl -sSki "${jamfAPI}${TargetGroupID}" \
+    -H "Authorization: Bearer ${bearerToken}" \
+    -H "Content-Type: text/xml" \
+    -d "${xmlHeader}${apiData}" \
+    -X PUT
+
 invalidateToken
+
+jamf recon
 
 exit 0
