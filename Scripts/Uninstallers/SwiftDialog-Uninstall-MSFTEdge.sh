@@ -5,7 +5,7 @@
 
 # Jamf Script Parameters
 dialog_command_file="${4:-/var/tmp/dialog.log}"   # $4: Command file path
-message="${5:-Installing …}"                      # $5: Message above progress bar
+message="${5:-Remove Microsoft Edge …}"                      # $5: Message above progress bar
 icon="${6:-/System/Applications/App Store.app/Contents/Resources/AppIcon.icns}" # $6: Main icon
 overlayicon="${7:-}"                              # $7: Overlay icon (optional)
 jamf_recon="${8:-0}"                              # $8: Run Jamf recon (0/1)
