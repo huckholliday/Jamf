@@ -19,7 +19,6 @@ get_applist() {
 }
 
 startDialog(){
-# Start SwiftDialog
     "$dialogBinary" \
         --title "$title" \
         --icon "$icon" \
