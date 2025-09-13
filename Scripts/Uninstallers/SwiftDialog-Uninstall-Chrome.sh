@@ -1,11 +1,11 @@
 #!/bin/bash
 
-# Remove Microsoft Edge Script
-# This script will remove Microsoft Edge and its associated files from a macOS system and show progress using SwiftDialog.
+# Remove Google Chrome Script
+# This script will remove Google Chrome and its associated files from a macOS system and show progress using SwiftDialog.
 
 # Jamf Script Parameters
 dialog_command_file="${4:-/var/tmp/dialog.log}"   # $4: Command file path
-message="${5:-Remove Microsoft Edge …}"                      # $5: Message above progress bar
+message="${5:-Remove Google Chrome …}"                      # $5: Message above progress bar
 icon="${6:-/System/Applications/App Store.app/Contents/Resources/AppIcon.icns}" # $6: Main icon
 overlayicon="${7:-}"                              # $7: Overlay icon (optional)
 jamf_recon="${8:-0}"                              # $8: Run Jamf recon (0/1)
@@ -64,17 +64,14 @@ sleep 0.5
 # --- Begin Custom Script Section ---
 # Define your custom functions
 applications() {
-    # Paths to Edge app bundles
-    EDGE_APPS=(
-        "/Applications/Microsoft Edge.app"
-        "/Applications/Microsoft Edge Beta.app"
-        "/Applications/Microsoft Edge Dev.app"
-        "/Applications/Microsoft Edge Canary.app"
-        "/Users/$CURRENT_USER/Applications/Microsoft Edge.app"
+    # Paths to Chrome app bundles
+    CHROME_APPS=(
+        "/Applications/Google Chrome.app"
+        "/Users/$CURRENT_USER/Applications/Google Chrome.app"
     )
 
-    # Remove Edge applications
-    for APP in "${EDGE_APPS[@]}"; do
+    # Remove Chrome applications
+    for APP in "${CHROME_APPS[@]}"; do
         if [ -d "$APP" ]; then
             echo "Removing: $APP"
             rm -rf "$APP"
@@ -86,13 +83,11 @@ applications() {
 
 userDirectories() {
     USER_DIRS=(
-        "/Users/$CURRENT_USER/Library/Application Support/Microsoft Edge"
-        "/Users/$CURRENT_USER/Library/Application Support/Microsoft/Edge"
-        "/Users/$CURRENT_USER/Library/Caches/Microsoft Edge"
-        "/Users/$CURRENT_USER/Library/Caches/Microsoft/Edge"
-        "/Users/$CURRENT_USER/Library/Preferences/com.microsoft.Edge.plist"
-        "/Users/$CURRENT_USER/Library/Saved Application State/com.microsoft.edgemac.savedState"
-        "/Users/$CURRENT_USER/Library/Logs/Microsoft Edge"
+        "/Users/$CURRENT_USER/Library/Application Support/Google/Chrome"
+        "/Users/$CURRENT_USER/Library/Caches/Google/Chrome"
+        "/Users/$CURRENT_USER/Library/Caches/com.google.Chrome"
+        "/Users/$CURRENT_USER/Library/Saved Application State/com.google.Chrome.savedState"
+        "/Users/$CURRENT_USER/Library/Preferences/com.google.Chrome.plist"
     )
 
     for DIR in "${USER_DIRS[@]}"; do
@@ -106,10 +101,9 @@ userDirectories() {
 
 systemDirectories() {
     SYSTEM_DIRS=(
-        "/Library/Preferences/com.microsoft.Edge.plist"
-        "/Library/LaunchAgents/com.microsoft.EdgeUpdater.plist"
-        "/Library/LaunchDaemons/com.microsoft.EdgeUpdater.Update.plist"
-        "/Library/Microsoft/EdgeUpdater"
+        "/Library/Google/GoogleSoftwareUpdate"
+        "/Library/LaunchAgents/com.google.keystone.agent.plist"
+        "/Library/LaunchDaemons/com.google.keystone.daemon.plist"
     )
 
     for DIR in "${SYSTEM_DIRS[@]}"; do
