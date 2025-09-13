@@ -13,6 +13,8 @@
 #
 ####################################################################################################
 
+eventName=${4} # This is the custom event name for the Jamf policy to reinstall Teams
+
 # Verify we are running as root
 if [[ $(id -u) -ne 0 ]]; then
   echo "ERROR: This script must be run as root **EXITING**"
@@ -68,7 +70,7 @@ fi
 echo "Cleared Microsoft Teams cache and data."
 
 # Reinstall Teams from Jamf policy
-jamf policy -event teams
+jamf policy -event $eventName
 
 # Relaunch Teams
 if [ -d "/Applications/Microsoft Teams.app" ]; then
