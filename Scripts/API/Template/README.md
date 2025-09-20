@@ -13,7 +13,7 @@
 
 ## Usage
 1. **Prepare Encrypted Credentials:**
-    - Use the [Encryption folder](https://github.com/huckholliday/Jamf/Scripts/Encryption) to encrypt your Jamf API username and password.
+    - Use the [Encryption prompt](https://raw.githubusercontent.com/huckholliday/Jamf/refs/heads/main/Scripts/Encryption/EncryptPrompt.sh) to encrypt your Jamf API username and password.
     - Store the encrypted username, password, salts, and passphrases as Jamf policy parameters.
 
 2. **Script Parameters:**
