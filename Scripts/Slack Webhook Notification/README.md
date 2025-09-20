@@ -13,7 +13,7 @@
 - Color-codes Slack message based on security status
 
 ## Usage
-1. **Encrypt Jamf API credentials** using [EncryptPromt.sh](https://github.com/huckholliday/Jamf/Scripts/Encryption/EncryptPromt.sh).
+1. **Encrypt Jamf API credentials** using [EncryptPromt.sh](https://raw.githubusercontent.com/huckholliday/Jamf/refs/heads/main/Scripts/Encryption/EncryptPrompt.sh).
 2. **Upload the script to Jamf Pro** and attach it to a policy that runs at the end of enrollment.
 3. **Provide the following parameters:**
 	- **Parameter 4:** Encrypted Jamf API username

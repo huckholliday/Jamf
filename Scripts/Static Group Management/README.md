@@ -40,7 +40,7 @@ This directory contains two Bash scripts for managing computer membership in Jam
 - Jamf API bearer tokens are invalidated at the end of each script.
 
 ## Usage
-1. **Encrypt your Jamf API credentials** using [EncryptPromt.sh](https://github.com/huckholliday/Jamf/Scripts/Encryption/EncryptPromt.sh).
+1. **Encrypt your Jamf API credentials** using [EncryptPromt.sh](https://raw.githubusercontent.com/huckholliday/Jamf/refs/heads/main/Scripts/Encryption/EncryptPrompt.sh).
 2. **Upload the scripts to Jamf Pro** and attach them to the appropriate policies.
 3. **Set script parameters** in the policy as described above.
 4. **Run the script as root** (Jamf Pro policies do this by default).

@@ -6,7 +6,7 @@ Due to users having multiple accounts across different tenants, we encountered n
 
 - [SwiftDialog](https://github.com/swiftDialog/swiftDialog) must be installed on the Mac. If it is not installed, the script will install it from a Jamf policy.
 - The script must be run as root.
-- Jamf API calls use encrypted username and password for security. To set up username and password encryption, use [EncryptedStrings](https://github.com/brysontyrrell/EncryptedStrings).
+- Jamf API calls use encrypted username and password for security. To set up username and password encryption, use [EncryptedStrings](https://raw.githubusercontent.com/huckholliday/Jamf/refs/heads/main/Scripts/Encryption/EncryptPrompt.sh).
 - You should already have Device Compliance setup and working in your Jamf tenat. [Device Compliance with Microsoft Entra and Jamf Pro](https://learn.jamf.com/bundle/technical-paper-microsoft-intune-current/page/Device_Compliance_with_Microsoft_Intune_and_Jamf_Pro.html)
 - In Jamf you will need to have a policy setup with a custom trigger for starting the Device Compliance process in Jamf.
 

@@ -16,7 +16,7 @@ This directory contains two Bash scripts designed for Jamf Pro deployment, enabl
 - **Requirements:**
   - A Composer PKG containing all tenant-specific Absolute files, organized by site.
   - Jamf API account with read permissions.
-  - Encrypted credentials (**Encrypt Jamf API credentials** using [EncryptPromt.sh](https://github.com/huckholliday/Jamf/Scripts/Encryption/EncryptPromt.sh)).
+  - Encrypted credentials (**Encrypt Jamf API credentials** using [EncryptPromt.sh](https://raw.githubusercontent.com/huckholliday/Jamf/refs/heads/main/Scripts/Encryption/EncryptPrompt.sh)).
 
 ### 2. Crowdstrike-GroupTagging.sh
 - **Purpose:** Tags the Crowdstrike Falcon installation with the correct group for the device's site after the main PKG install.
@@ -29,7 +29,7 @@ This directory contains two Bash scripts designed for Jamf Pro deployment, enabl
 - **Requirements:**
   - Crowdstrike Falcon must already be installed.
   - Jamf API account with read permissions.
-  - Encrypted credentials (**Encrypt Jamf API credentials** using [EncryptPromt.sh](https://github.com/huckholliday/Jamf/Scripts/Encryption/EncryptPromt.sh)).
+  - Encrypted credentials (**Encrypt Jamf API credentials** using [EncryptPromt.sh](https://raw.githubusercontent.com/huckholliday/Jamf/refs/heads/main/Scripts/Encryption/EncryptPrompt.sh)).
 
 ## Common Features
 - Both scripts:
@@ -39,7 +39,7 @@ This directory contains two Bash scripts designed for Jamf Pro deployment, enabl
   - Are intended to be run as post-install scripts in Jamf Pro policies.
 
 ## Usage
-1. **Encrypt Jamf API credentials** using [EncryptPromt.sh](https://github.com/huckholliday/Jamf/Scripts/Encryption/EncryptPromt.sh).
+1. **Encrypt Jamf API credentials** using [EncryptPromt.sh](https://raw.githubusercontent.com/huckholliday/Jamf/refs/heads/main/Scripts/Encryption/EncryptPrompt.sh).
 2. **Upload the scripts to Jamf Pro** and attach them to the appropriate policies:
    - For Absolute: Attach to the policy that installs the Absolute PKG.
    - For Crowdstrike: Attach to run after the Crowdstrike PKG install.
