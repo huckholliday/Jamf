@@ -27,10 +27,6 @@ This repository contains a comprehensive collection of scripts, extension attrib
 - **Encryption Utilities**
 	- `DecryptPrompt.sh`, `EncryptPrompt.sh`: Scripts for encrypting/decrypting strings, useful for secure credential handling.
 
-#### Reset/
-- **Reset & Troubleshooting**
-	- `MSFT-Teams-Reset.sh`: Resets Microsoft Teams for troubleshooting.
-
 #### Slack Webhook Notification/
 - **Slack Integration**
 	- `SlackNotification-CompletedEnrollment.sh`: Notifies Slack when Zero Touch enrollment completes.
